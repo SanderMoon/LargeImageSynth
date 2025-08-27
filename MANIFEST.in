@@ -1,0 +1,20 @@
+# Include package data
+include README.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+
+# Include examples and experiments
+recursive-include examples *.json *.ipynb *.py
+
+# Include tests
+recursive-include tests *.py
+
+# Exclude unwanted files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
+exclude venv
+exclude .venv
