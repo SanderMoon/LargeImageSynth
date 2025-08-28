@@ -51,12 +51,11 @@ large-image-synth run examples/experiments/binary.json --verbose
 
 ## Architecture Overview
 
-### Dual API Architecture (NEW)
-
+### Dual API Architecture
 LargeImageSynth provides **two complementary APIs**:
 
-1. **Legacy API** (original, fully supported): Bar-based generation with `SyntheticDataGenerator`
-2. **Scene API** (new, enhanced): Multi-object scenes with spatial relationships and automatic tiling
+1. **Legacy API**: Bar-based generation with `SyntheticDataGenerator` for backward compatibility
+2. **Scene API**: Multi-object scenes with spatial relationships and automatic tiling
 
 Both APIs share the same underlying infrastructure and work seamlessly together.
 
@@ -71,36 +70,36 @@ Both APIs share the same underlying infrastructure and work seamlessly together.
 
 ### Key Components
 
-**SceneBasedPipeline** (NEW): Primary pipeline that generates large images, tiles them automatically, and creates spatial learning datasets. Handles both full-image storage and tile extraction with proper coordinate tracking.
+**SceneBasedPipeline**: Primary pipeline that generates large images, tiles them automatically, and creates spatial learning datasets. Handles both full-image storage and tile extraction with proper coordinate tracking.
 
-**Shape System** (NEW): 
+**Shape System**: 
 - Abstract `Shape` base class with consistent drawing/description interface
 - Concrete implementations: `Bar`, `Star`, `Circle` with extensible parameters and size control
 - `ShapeFactory` for dynamic shape creation from configuration
 - Easy extension for custom shapes
 
-**Scene Composition** (NEW):
+**Scene Composition**:
 - `Scene`: Container for multiple objects with spatial relationships and analysis
 - `SceneObject`: Shape + position + metadata with automatic coordinate tracking
 - Layout strategies: `RandomLayout`, `GridLayout`, `RelationalLayout` with spread parameters
 - Relationship analysis for generating spatial descriptions and binary classification labels
 
-**Automatic Tiling System** (NEW):
+**Automatic Tiling System**:
 - Splits large images (e.g., 672×672) into tile grids (e.g., 3×3 of 224×224)
 - Maintains tile coordinates (tile_x, tile_y) for spatial analysis
 - Links tiles to original full images via `full_image_filename` reference
 - Handles both individual tile processing and full-scene context
 
-**Task Generators** (NEW): High-level interfaces for spatial learning:
+**Task Generators**: High-level interfaces for spatial learning:
 - `SpatialBinaryTaskGenerator`: "Is star A above star B?" with proper class labeling
 - `ColorComparisonTaskGenerator`: "Are both objects the same color?" 
 - Preset functions like `create_two_star_binary_classification()` with configurable relationships
 
-**Legacy Components** (unchanged): `SyntheticDataGenerator`, `ImageEmbedder`, `SyntheticDataPipeline` work exactly as before but now use the new architecture internally via compatibility adapters.
+**Legacy Components**: `SyntheticDataGenerator`, `ImageEmbedder`, `SyntheticDataPipeline` maintain full backward compatibility through internal architecture adapters.
 
 ### Configuration System
 
-**New Scene Format**: Multi-object scenes with spatial relationships and tiling:
+**Scene Format**: Multi-object scenes with spatial relationships and tiling:
 ```json
 {
   "scenes": [{

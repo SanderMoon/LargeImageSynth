@@ -89,7 +89,7 @@ pipeline.save_data("hdf5")
 
 ## Configuration
 
-### Scene-Based Configuration (New)
+### Scene-Based Configuration
 
 Create complex multi-object scenes with spatial relationships:
 
@@ -172,31 +172,26 @@ Create complex multi-object scenes with spatial relationships:
 LargeImageSynth/
 ├── src/tiled_dummy_gen/          # Main package
 │   ├── core/                     # Core functionality  
-│   │   ├── scene_generator.py   # Scene-based pipeline (NEW)
-│   │   ├── generator.py         # Legacy synthetic data generation
+│   │   ├── scene_generator.py   # Scene-based pipeline│   │   ├── generator.py         # Legacy synthetic data generation
 │   │   ├── embedder.py          # Image embedding
 │   │   └── pipeline.py          # Legacy pipeline
 │   ├── config/                  # Configuration system
 │   │   ├── scene_config.py      # Scene-based config (NEW) 
 │   │   └── parser.py            # Legacy config parsing
-│   ├── shapes/                  # Shape system (NEW)
-│   │   ├── base.py             # Abstract shape classes
+│   ├── shapes/                  # Shape system│   │   ├── base.py             # Abstract shape classes
 │   │   ├── factory.py          # Shape factory
 │   │   ├── bar.py              # Bar shape
 │   │   ├── star.py             # Star shape  
 │   │   └── circle.py           # Circle shape
-│   ├── scene/                   # Scene composition (NEW)
-│   │   ├── objects.py          # Scene and object classes
+│   ├── scene/                   # Scene composition│   │   ├── objects.py          # Scene and object classes
 │   │   ├── layout.py           # Spatial layout strategies
 │   │   └── relationships.py    # Spatial relationship analysis
-│   ├── tasks/                   # Task generators (NEW)
-│   │   ├── generators.py       # Task-specific generators
+│   ├── tasks/                   # Task generators│   │   ├── generators.py       # Task-specific generators
 │   │   └── presets.py          # Common task presets
 │   ├── export/                  # Export formats
 │   │   ├── hdf5_exporter.py    # HDF5 export
 │   │   └── webdataset_exporter.py # WebDataset export
-│   ├── compat/                  # Backward compatibility (NEW)
-│   │   ├── adapters.py         # Legacy API adapters
+│   ├── compat/                  # Backward compatibility│   │   ├── adapters.py         # Legacy API adapters
 │   │   └── converters.py       # Config converters
 │   └── cli.py                   # Command-line interface
 ├── examples/                    # Examples and experiments
