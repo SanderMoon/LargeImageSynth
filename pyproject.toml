@@ -3,16 +3,16 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tiled-dummy-gen"
+name = "large-image-synth"
 version = "0.1.0"
-description = "A synthetic data generation library for creating tiled dummy datasets with image embeddings"
+description = "A synthetic data generation library for creating large synthetic images with spatial objects, tiling, and embeddings for machine learning research"
 readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "MIT"}
 authors = [
     {name = "Sander Moonemans", email = "sander.moonemans@example.com"}
 ]
-keywords = ["synthetic-data", "machine-learning", "computer-vision", "embeddings"]
+keywords = ["synthetic-data", "machine-learning", "computer-vision", "embeddings", "spatial-learning", "scene-generation"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -51,17 +51,17 @@ docs = [
     "myst-parser>=0.18.0",
 ]
 all = [
-    "tiled-dummy-gen[cli,dev,docs]",
+    "large-image-synth[cli,dev,docs]",
 ]
 
 # Entry points for CLI
 [project.scripts]
-tiled-dummy-gen = "tiled_dummy_gen.cli:main"
+large-image-synth = "tiled_dummy_gen.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/sandermoonemans/TiledDummyGen"
-Repository = "https://github.com/sandermoonemans/TiledDummyGen"
-Issues = "https://github.com/sandermoonemans/TiledDummyGen/issues"
+Homepage = "https://github.com/sandermoonemans/LargeImageSynth"
+Repository = "https://github.com/sandermoonemans/LargeImageSynth"
+Issues = "https://github.com/sandermoonemans/LargeImageSynth/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

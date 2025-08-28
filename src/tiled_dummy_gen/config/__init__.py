@@ -4,7 +4,7 @@ This module provides configuration classes and parsing functionality
 for setting up experiments and managing parameters.
 """
 
-from .parser import (
+from tiled_dummy_gen.config.parser import (
     ExperimentConfigLoader,
     ExperimentConfig,
     ClassConfig,
@@ -16,7 +16,7 @@ from .parser import (
 
 __all__ = [
     "ExperimentConfigLoader",
-    "ExperimentConfig", 
+    "ExperimentConfig",
     "ClassConfig",
     "DatasetConfig",
     "SplitConfig",

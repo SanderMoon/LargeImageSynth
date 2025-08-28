@@ -6,15 +6,23 @@ import json
 import logging
 from typing import Any, List
 
-from .base_exporter import Exporter
+from tiled_dummy_gen.export.base_exporter import Exporter
 
 logger = logging.getLogger(__name__)
+
 
 class FileStructureExporter(Exporter):
     """
     Exports data to a structured file format compatible with PyTorch data loaders.
     """
-    def __init__(self, output_dir: str, dataset_config: Any, split_config: Any, num_tiles_base: int):
+
+    def __init__(
+        self,
+        output_dir: str,
+        dataset_config: Any,
+        split_config: Any,
+        num_tiles_base: int,
+    ):
         super().__init__(output_dir, dataset_config, split_config, num_tiles_base)
         logger.info("FileStructureExporter initialized.")
 
@@ -38,10 +46,16 @@ class FileStructureExporter(Exporter):
             sample_id = "_".join(parts[1:])
             return subject_id, sample_id
 
-        data_df["subject_id", "sample_id"] = data_df["label"].apply(lambda x: pd.Series(parse_label(x)))
+        data_df["subject_id", "sample_id"] = data_df["label"].apply(
+            lambda x: pd.Series(parse_label(x))
+        )
 
         text_annotations = {}
-        grouped_descriptions = data_df.groupby(["subject_id", "sample_id"])["description"].first().reset_index()
+        grouped_descriptions = (
+            data_df.groupby(["subject_id", "sample_id"])["description"]
+            .first()
+            .reset_index()
+        )
         for idx, row in grouped_descriptions.iterrows():
             subject_id = row["subject_id"]
             sample_id = row["sample_id"]
@@ -59,10 +73,14 @@ class FileStructureExporter(Exporter):
         data_df["cross_section_index"] = 0
         data_df["tile_index"] = data_df.groupby("sample_id_col").cumcount()
 
-        embedding_cols = [col for col in data_df.columns if col.startswith("embedding_")]
+        embedding_cols = [
+            col for col in data_df.columns if col.startswith("embedding_")
+        ]
 
         if "tile_x" not in data_df.columns or "tile_y" not in data_df.columns:
-            logger.warning("Tile positions 'tile_x' and 'tile_y' are missing from data. Cannot save full file structure.")
+            logger.warning(
+                "Tile positions 'tile_x' and 'tile_y' are missing from data. Cannot save full file structure."
+            )
             return
 
         batch_size = 100
@@ -70,7 +88,9 @@ class FileStructureExporter(Exporter):
         sample_ids_txt_list = []
 
         for batch_num in range(num_batches):
-            batch_sample_ids = sample_ids[batch_num * batch_size: (batch_num + 1) * batch_size]
+            batch_sample_ids = sample_ids[
+                batch_num * batch_size : (batch_num + 1) * batch_size
+            ]
             batch_dir = os.path.join(self.output_dir, f"data_{batch_num}")
             os.makedirs(batch_dir, exist_ok=True)
             extracted_features_dir = os.path.join(batch_dir, "extracted_features")
@@ -79,8 +99,10 @@ class FileStructureExporter(Exporter):
             feature_info_path = os.path.join(batch_dir, "feature_information.txt")
             tile_info_path = os.path.join(batch_dir, "tile_information.txt")
 
-            with open(feature_info_path, "w") as feature_info_file, \
-                 open(tile_info_path, "w") as tile_info_file:
+            with (
+                open(feature_info_path, "w") as feature_info_file,
+                open(tile_info_path, "w") as tile_info_file,
+            ):
                 for sample_id in batch_sample_ids:
                     sample_ids_txt_list.append(sample_id)
                     sample_data = data_df[data_df["sample_id_col"] == sample_id]
@@ -111,7 +133,9 @@ class FileStructureExporter(Exporter):
                             int(row["cross_section_index"]),
                             int(row["tile_index"]),
                         )
-                        feature_array = list(row[embedding_cols].values.astype(np.float32))
+                        feature_array = list(
+                            row[embedding_cols].values.astype(np.float32)
+                        )
                         feature_tensor = [feature_array]
                         position_tensor = [(1, int(row["tile_x"])), int(row["tile_y"])]
 
@@ -149,8 +173,12 @@ class FileStructureExporter(Exporter):
         val_ratio = self.split_config.val
         test_ratio = self.split_config.test
 
-        train_ids, temp_ids = train_test_split(sample_ids_list, test_size=(1 - train_ratio), random_state=42)
-        val_ids, test_ids = train_test_split(temp_ids, test_size=(test_ratio / (test_ratio + val_ratio)), random_state=42)
+        train_ids, temp_ids = train_test_split(
+            sample_ids_list, test_size=(1 - train_ratio), random_state=42
+        )
+        val_ids, test_ids = train_test_split(
+            temp_ids, test_size=(test_ratio / (test_ratio + val_ratio)), random_state=42
+        )
 
         splits = {"train": train_ids, "val": val_ids, "test": test_ids}
 

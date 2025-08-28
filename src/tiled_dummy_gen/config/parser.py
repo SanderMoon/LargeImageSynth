@@ -105,7 +105,9 @@ class ExperimentConfigLoader:
             with open(self.json_path, "r") as f:
                 try:
                     self._config_data = json.load(f)
-                    logger.info(f"Successfully loaded configuration from '{self.json_path}'.")
+                    logger.info(
+                        f"Successfully loaded configuration from '{self.json_path}'."
+                    )
                 except json.JSONDecodeError as e:
                     raise ValueError(f"Error parsing JSON file: {e}")
         return self._config_data
@@ -138,7 +140,9 @@ class ExperimentConfigLoader:
 
             class_configs = self._parse_class_configs(class_template, variations)
 
-            embedder_config = self._parse_embedder_config(config_data["embedder_config"])
+            embedder_config = self._parse_embedder_config(
+                config_data["embedder_config"]
+            )
             dataset_config = self._parse_dataset_config(config_data["dataset_config"])
             split_config = self._parse_split_config(config_data["split_config"])
 
@@ -183,12 +187,20 @@ class ExperimentConfigLoader:
             class_config = ClassConfig(
                 name=class_name,
                 num_samples=merged_config.get("num_samples", 3),
-                image_background_color=merged_config.get("image_background_color", "blue"),
-                image_bar_orientation=merged_config.get("image_bar_orientation", "horizontal"),
+                image_background_color=merged_config.get(
+                    "image_background_color", "blue"
+                ),
+                image_bar_orientation=merged_config.get(
+                    "image_bar_orientation", "horizontal"
+                ),
                 image_bar_thickness=merged_config.get("image_bar_thickness", "medium"),
                 augment_images=merged_config.get("augment_images", True),
-                augment_images_noise_level=merged_config.get("augment_images_noise_level", 10.0),
-                augment_images_zoom_factor=tuple(merged_config.get("augment_images_zoom_factor", [1.0, 1.3])),
+                augment_images_noise_level=merged_config.get(
+                    "augment_images_noise_level", 10.0
+                ),
+                augment_images_zoom_factor=tuple(
+                    merged_config.get("augment_images_zoom_factor", [1.0, 1.3])
+                ),
                 augment_texts=merged_config.get("augment_texts", True),
             )
             class_configs.append(class_config)
@@ -196,7 +208,9 @@ class ExperimentConfigLoader:
 
         return class_configs
 
-    def _parse_embedder_config(self, embedder_config_data: Dict[str, Any]) -> EmbedderConfig:
+    def _parse_embedder_config(
+        self, embedder_config_data: Dict[str, Any]
+    ) -> EmbedderConfig:
         """
         Parses the embedder configuration from JSON data.
         """
@@ -204,10 +218,18 @@ class ExperimentConfigLoader:
             preprocessing_data = embedder_config_data.get("preprocessing", {})
             preprocessing_config = PreprocessingConfig(
                 resize=preprocessing_data.get("resize", True),
-                resize_size=(tuple(preprocessing_data["resize_size"]) if preprocessing_data.get("resize_size") else None),
+                resize_size=(
+                    tuple(preprocessing_data["resize_size"])
+                    if preprocessing_data.get("resize_size")
+                    else None
+                ),
                 normalize=preprocessing_data.get("normalize", True),
-                normalization_mean=tuple(preprocessing_data.get("normalization_mean", (0.485, 0.456, 0.406))),
-                normalization_std=tuple(preprocessing_data.get("normalization_std", (0.229, 0.224, 0.225))),
+                normalization_mean=tuple(
+                    preprocessing_data.get("normalization_mean", (0.485, 0.456, 0.406))
+                ),
+                normalization_std=tuple(
+                    preprocessing_data.get("normalization_std", (0.229, 0.224, 0.225))
+                ),
                 additional_transforms=preprocessing_data.get("additional_transforms"),
             )
 
@@ -223,7 +245,9 @@ class ExperimentConfigLoader:
         except Exception as e:
             raise ValueError(f"Error parsing embedder_config: {e}")
 
-    def _parse_dataset_config(self, dataset_config_data: Dict[str, Any]) -> DatasetConfig:
+    def _parse_dataset_config(
+        self, dataset_config_data: Dict[str, Any]
+    ) -> DatasetConfig:
         """
         Parses the dataset configuration from JSON data.
         """

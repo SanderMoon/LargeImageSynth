@@ -4,26 +4,26 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/sandermoonemans/TiledDummyGen.git
-cd TiledDummyGen
+git clone https://github.com/sandermoonemans/LargeImageSynth.git
+cd LargeImageSynth
 
 # Install package
 pip install -e ".[cli]"
 
 # Verify installation
-tiled-dummy-gen --help
+large-image-synth --help
 ```
 
 ## 5-Minute Example
 
 ### 1. Validate Example Configuration
 ```bash
-tiled-dummy-gen validate examples/experiments/binary.json
+large-image-synth validate examples/experiments/binary.json
 ```
 
 ### 2. Run Complete Pipeline
 ```bash
-tiled-dummy-gen run examples/experiments/binary.json --verbose
+large-image-synth run examples/experiments/binary.json --verbose
 ```
 
 This generates:

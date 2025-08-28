@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with the LargeImageSynth codebase.
 
 ## Development Commands
 
@@ -33,57 +33,119 @@ mypy src/
 
 ### CLI Usage
 ```bash
-# Run complete pipeline with embeddings
-tiled-dummy-gen run examples/experiments/binary.json --verbose
+# Run complete pipeline with embeddings (scene-based)
+large-image-synth run examples/experiments/spatial_stars_example.json --verbose
 
 # Generate synthetic data only (no embeddings)
-tiled-dummy-gen generate examples/experiments/binary.json --no-embedding
+large-image-synth generate examples/experiments/spatial_stars_example.json
 
 # Validate configuration file
-tiled-dummy-gen validate examples/experiments/binary.json
+large-image-synth validate examples/experiments/binary.json
 
 # Embed existing data
-tiled-dummy-gen embed examples/experiments/binary.json
+large-image-synth embed examples/experiments/spatial_stars_example.json
+
+# Legacy bar-based generation still works
+large-image-synth run examples/experiments/binary.json --verbose
 ```
 
 ## Architecture Overview
 
-### Core Pipeline Flow
-1. **Configuration Loading** (`config/parser.py`) - Parses JSON experiment configurations and creates typed config objects
-2. **Data Generation** (`core/generator.py`) - Creates synthetic images with configurable properties (bars, colors, orientations)  
-3. **Image Embedding** (`core/embedder.py`) - Embeds images using Vision Transformer models (ViT)
-4. **Data Management** (`data/manager.py`) - Manages annotations and embeddings in memory
-5. **Export** (`export/`) - Exports to multiple formats (HDF5, WebDataset, file structure)
+### Dual API Architecture (NEW)
 
-The main orchestrator is `SyntheticDataPipeline` in `core/pipeline.py` which coordinates all components.
+LargeImageSynth provides **two complementary APIs**:
+
+1. **Legacy API** (original, fully supported): Bar-based generation with `SyntheticDataGenerator`
+2. **Scene API** (new, enhanced): Multi-object scenes with spatial relationships and automatic tiling
+
+Both APIs share the same underlying infrastructure and work seamlessly together.
+
+### Scene-Based Pipeline Flow (Primary)
+1. **Configuration Loading** (`config/scene_config.py`) - Loads scene-based JSON configurations with automatic legacy format conversion
+2. **Shape System** (`shapes/`) - Extensible shape factory with abstract base classes (bars, stars, circles, custom shapes)
+3. **Scene Composition** (`scene/`) - Multi-object scenes with flexible spatial layouts and relationship-based positioning
+4. **Scene Generation** (`core/scene_generator.py`) - Generates large images (e.g., 672×672) with spatial relationships
+5. **Automatic Tiling** - Splits large images into smaller tiles (e.g., 3×3 grid of 224×224 patches) 
+6. **Task Generation** (`tasks/`) - High-level generators for spatial learning scenarios with proper labeling
+7. **Embedding & Export** - ViT embedding of individual tiles with spatial metadata and HDF5/WebDataset export
 
 ### Key Components
 
-**SyntheticDataGenerator**: Creates synthetic images with bars of different orientations (horizontal, vertical, diagonal), thicknesses (thin, medium, thick), and background colors. Supports image augmentation with noise and zoom.
+**SceneBasedPipeline** (NEW): Primary pipeline that generates large images, tiles them automatically, and creates spatial learning datasets. Handles both full-image storage and tile extraction with proper coordinate tracking.
 
-**ImageEmbedder**: Uses pre-trained Vision Transformer models to create embeddings. Configurable preprocessing pipeline with resize, normalization, and custom transforms.
+**Shape System** (NEW): 
+- Abstract `Shape` base class with consistent drawing/description interface
+- Concrete implementations: `Bar`, `Star`, `Circle` with extensible parameters and size control
+- `ShapeFactory` for dynamic shape creation from configuration
+- Easy extension for custom shapes
 
-**Export System**: Modular exporters supporting:
-- HDF5 format with train/val/test splits
-- WebDataset format for large-scale training
-- File structure export for traditional ML workflows
+**Scene Composition** (NEW):
+- `Scene`: Container for multiple objects with spatial relationships and analysis
+- `SceneObject`: Shape + position + metadata with automatic coordinate tracking
+- Layout strategies: `RandomLayout`, `GridLayout`, `RelationalLayout` with spread parameters
+- Relationship analysis for generating spatial descriptions and binary classification labels
+
+**Automatic Tiling System** (NEW):
+- Splits large images (e.g., 672×672) into tile grids (e.g., 3×3 of 224×224)
+- Maintains tile coordinates (tile_x, tile_y) for spatial analysis
+- Links tiles to original full images via `full_image_filename` reference
+- Handles both individual tile processing and full-scene context
+
+**Task Generators** (NEW): High-level interfaces for spatial learning:
+- `SpatialBinaryTaskGenerator`: "Is star A above star B?" with proper class labeling
+- `ColorComparisonTaskGenerator`: "Are both objects the same color?" 
+- Preset functions like `create_two_star_binary_classification()` with configurable relationships
+
+**Legacy Components** (unchanged): `SyntheticDataGenerator`, `ImageEmbedder`, `SyntheticDataPipeline` work exactly as before but now use the new architecture internally via compatibility adapters.
 
 ### Configuration System
 
-Experiments are defined in JSON files with these key sections:
-- `class_template`: Base configuration for synthetic data generation
-- `variations`: Creates class variations (e.g., different background colors)
-- `embedder_config`: Vision model and preprocessing settings
-- `dataset_config`: Output format configuration
-- `split_config`: Train/validation/test split ratios
+**New Scene Format**: Multi-object scenes with spatial relationships and tiling:
+```json
+{
+  "scenes": [{
+    "scene_id": "star1_on_top",
+    "background_color": "white",
+    "canvas_size": [672, 672],
+    "objects": [
+      {"object_id": "star1", "shape_type": "star", "color": "red", "size": 0.3},
+      {"object_id": "star2", "shape_type": "star", "color": "blue", "size": 0.3}
+    ],
+    "layout": {
+      "layout_type": "relational",
+      "layout_params": {
+        "separation_distance": 200,
+        "horizontal_spread": 150, 
+        "vertical_spread": 120
+      },
+      "relationships": [{"object1": "star1", "object2": "star2", "relation": "above"}]
+    },
+    "task": {"task_type": "binary_classification", "num_samples": 50}
+  }],
+  "num_tiles_base": 3,
+  "image_size": [672, 672]
+}
+```
 
-### Tiled Image Support
+**Legacy Format**: Still fully supported - automatically converted internally:
+```json
+{
+  "class_template": {"image_bar_orientation": "diagonal", "num_samples": 8},
+  "variations": {"image_background_color": ["blue", "red"]},
+  "num_tiles_base": 3
+}
+```
 
-The system supports generating multi-tile images where:
-- `num_tiles_base` controls the grid size (e.g., 3x3 tiles)
-- Large images are split into smaller tiles for embedding
-- Each tile maintains spatial relationship metadata
-- Both individual tiles and large composite images are saved
+### Spatial Feature Learning Support
+
+Perfect for spatial reasoning and large-scale vision tasks:
+- **Large image generation**: Create high-resolution scenes (672×672, 1024×1024, etc.)
+- **Automatic tiling**: Split into ML-ready patches (224×224) with coordinate tracking
+- **Multi-object scenes**: 2+ objects with independent properties and spatial relationships
+- **Spatial relationships**: Above/below, left/right with configurable spread and variation
+- **Task-oriented labeling**: Binary classification for "which object is above/below which"
+- **Full traceability**: Each tile linked to source image and spatial context
+- **Extensible shapes**: Built-in bars, stars, circles + easy custom shape addition
 
 ## Common Development Patterns
 
