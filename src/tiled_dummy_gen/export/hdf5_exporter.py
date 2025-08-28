@@ -7,7 +7,7 @@ import logging
 from typing import Any, List
 import random
 
-from .base_exporter import Exporter
+from tiled_dummy_gen.export.base_exporter import Exporter
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class HDF5Exporter(Exporter):
             return subject_id, sample_id
 
         sample_ids_txt_list = []  # For txt file (strings)
-        sample_paths_list = [] # For HDF5 paths
+        sample_paths_list = []  # For HDF5 paths
 
         with h5py.File(self.hdf5_path, "w") as hdf5_file:
             sample_index_grp = hdf5_file.create_group("sample-index")
@@ -120,12 +120,22 @@ class HDF5Exporter(Exporter):
             # After processing all samples, create datasets under 'sample-index'
             if sample_ids_txt_list:
                 sample_ids_bytes = [cid.encode("utf-8") for cid in sample_ids_txt_list]
-                sample_paths_bytes = [cpath.encode("utf-8") for cpath in sample_paths_list]
+                sample_paths_bytes = [
+                    cpath.encode("utf-8") for cpath in sample_paths_list
+                ]
 
-                max_sample_id_length = max(len(cid) for cid in sample_ids_bytes) if sample_ids_bytes else 0
-                max_sample_path_length = max(len(cpath) for cpath in sample_paths_bytes) if sample_paths_bytes else 0
+                max_sample_id_length = (
+                    max(len(cid) for cid in sample_ids_bytes) if sample_ids_bytes else 0
+                )
+                max_sample_path_length = (
+                    max(len(cpath) for cpath in sample_paths_bytes)
+                    if sample_paths_bytes
+                    else 0
+                )
 
-                sample_ids_np = np.array(sample_ids_bytes, dtype=f"S{max_sample_id_length}")
+                sample_ids_np = np.array(
+                    sample_ids_bytes, dtype=f"S{max_sample_id_length}"
+                )
                 sample_paths_np = np.array(
                     sample_paths_bytes, dtype=f"S{max_sample_path_length}"
                 )
@@ -139,7 +149,8 @@ class HDF5Exporter(Exporter):
             else:
                 logger.warning("No samples were added to 'sample-index'.")
 
-        self._save_split_files(sample_ids_txt_list)
+        if self.split_config.split:
+            self._save_split_files(sample_ids_txt_list)
         logger.info(f"Data successfully saved to HDF5: {self.hdf5_path}")
 
     def _save_split_files(self, sample_ids_list: List[str]):

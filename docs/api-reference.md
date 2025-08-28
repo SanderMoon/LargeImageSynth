@@ -1,10 +1,41 @@
 # API Reference
 
-## Core Classes
+## Scene-Based API (Recommended)
+
+### `SceneBasedPipeline`
+
+Primary pipeline for generating large images with spatial objects and automatic tiling.
+
+```python
+from tiled_dummy_gen.core.scene_generator import SceneBasedPipeline
+from tiled_dummy_gen.config.scene_config import SceneConfigLoader
+
+# Load scene configuration
+loader = SceneConfigLoader('config.json')
+config = loader.load_config()
+
+# Create and run pipeline
+pipeline = SceneBasedPipeline(config)
+pipeline.run_with_embedding()
+pipeline.save_data("hdf5")
+```
+
+### `SceneGenerator`
+
+Creates multi-object scenes with spatial relationships.
+
+```python
+from tiled_dummy_gen.core.scene_generator import SceneGenerator
+
+generator = SceneGenerator()
+image, description, metadata = generator.generate_sample(scene_config)
+```
+
+## Legacy API (Still Supported)
 
 ### `SyntheticDataGenerator`
 
-Generates synthetic images with configurable visual properties.
+Generates synthetic bar images with configurable visual properties.
 
 ```python
 from tiled_dummy_gen import SyntheticDataGenerator

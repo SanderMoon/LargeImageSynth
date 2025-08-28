@@ -1,8 +1,8 @@
-# TiledDummyGen Documentation
+# LargeImageSynth Documentation
 
 ## Overview
 
-TiledDummyGen is a Python library for generating synthetic tiled datasets with image embeddings, designed for machine learning research and experimentation.
+LargeImageSynth is a Python library for generating large synthetic images with spatial objects, automatic tiling, and embeddings for machine learning research and spatial feature learning.
 
 ## Documentation Structure
 
@@ -13,9 +13,15 @@ TiledDummyGen is a Python library for generating synthetic tiled datasets with i
 
 ### Key Features
 
-🎨 **Configurable Synthetic Data**
-- Generate images with customizable background colors, bar orientations, and thicknesses
-- Template-based configuration with automatic variation generation
+🎨 **Scene-Based Generation**
+- Create complex multi-object scenes with spatial relationships
+- Support for bars, stars, circles and custom shapes
+- Configurable spatial layouts with relationship-based positioning
+
+📐 **Automatic Tiling**
+- Generate large images (e.g., 672×672) and automatically split into tiles
+- Maintain spatial coordinate tracking for each tile
+- Perfect for spatial feature learning and large-scale vision tasks
 
 🧠 **Image Embeddings**  
 - Automatic embedding using Vision Transformers (ViT, CLIP, etc.)

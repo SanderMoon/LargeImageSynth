@@ -4,8 +4,8 @@ This module contains the main classes for synthetic data generation,
 image embedding, and pipeline orchestration.
 """
 
-from .generator import SyntheticDataGenerator
-from .embedder import ImageEmbedder
-from .pipeline import SyntheticDataPipeline
+from tiled_dummy_gen.core.generator import SyntheticDataGenerator
+from tiled_dummy_gen.core.embedder import ImageEmbedder
+from tiled_dummy_gen.core.pipeline import SyntheticDataPipeline
 
 __all__ = ["SyntheticDataGenerator", "ImageEmbedder", "SyntheticDataPipeline"]

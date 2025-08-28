@@ -2,41 +2,44 @@
 
 ## Commands
 
-### `tiled-dummy-gen run`
+### `large-image-synth run`
 
 Run the complete synthetic data generation pipeline with embeddings.
 
 ```bash
-tiled-dummy-gen run CONFIG_PATH [OPTIONS]
+large-image-synth run CONFIG_PATH [OPTIONS]
 ```
 
 **Options:**
 - `-o, --output-dir PATH` - Override output directory from config
 - `--embedding / --no-embedding` - Enable/disable embedding generation (default: enabled)
-- `--format [hdf5|files|both]` - Output format (default: hdf5)
+- `--format [hdf5|files|webdataset|both]` - Output format (default: hdf5)
 - `-v, --verbose` - Enable verbose output
 
 **Examples:**
 ```bash
-# Basic usage
-tiled-dummy-gen run experiments/binary.json
+# Scene-based generation (recommended)
+large-image-synth run examples/experiments/spatial_stars_example.json
+
+# Legacy bar-based generation  
+large-image-synth run experiments/binary.json
 
 # Override output directory
-tiled-dummy-gen run experiments/binary.json -o /custom/output
+large-image-synth run experiments/spatial_stars_example.json -o /custom/output
 
-# Generate both HDF5 and file structure formats
-tiled-dummy-gen run experiments/binary.json --format both
+# Generate multiple export formats
+large-image-synth run experiments/spatial_stars_example.json --format both
 
 # Skip embedding generation
-tiled-dummy-gen run experiments/binary.json --no-embedding
+large-image-synth run experiments/spatial_stars_example.json --no-embedding
 ```
 
-### `tiled-dummy-gen generate`
+### `large-image-synth generate`
 
 Generate synthetic data without embeddings (faster).
 
 ```bash
-tiled-dummy-gen generate CONFIG_PATH [OPTIONS]
+large-image-synth generate CONFIG_PATH [OPTIONS]
 ```
 
 **Options:**
@@ -45,15 +48,15 @@ tiled-dummy-gen generate CONFIG_PATH [OPTIONS]
 
 **Example:**
 ```bash
-tiled-dummy-gen generate experiments/multiclass.json -v
+large-image-synth generate experiments/multiclass.json -v
 ```
 
-### `tiled-dummy-gen embed`
+### `large-image-synth embed`
 
 Generate embeddings for existing images.
 
 ```bash
-tiled-dummy-gen embed CONFIG_PATH [OPTIONS]
+large-image-synth embed CONFIG_PATH [OPTIONS]
 ```
 
 **Options:**
@@ -63,20 +66,20 @@ tiled-dummy-gen embed CONFIG_PATH [OPTIONS]
 **Example:**
 ```bash
 # Generate embeddings after running generate command
-tiled-dummy-gen embed experiments/binary.json
+large-image-synth embed experiments/binary.json
 ```
 
-### `tiled-dummy-gen validate`
+### `large-image-synth validate`
 
 Validate a configuration file without running the pipeline.
 
 ```bash
-tiled-dummy-gen validate CONFIG_PATH
+large-image-synth validate CONFIG_PATH
 ```
 
 **Example:**
 ```bash
-tiled-dummy-gen validate experiments/binary.json
+large-image-synth validate experiments/binary.json
 # Output:
 # ✅ Configuration is valid!
 #    - Classes: 2
@@ -88,21 +91,21 @@ tiled-dummy-gen validate experiments/binary.json
 
 1. **Validate configuration:**
    ```bash
-   tiled-dummy-gen validate config.json
+   large-image-synth validate config.json
    ```
 
 2. **Generate data with embeddings:**
    ```bash
-   tiled-dummy-gen run config.json --verbose
+   large-image-synth run config.json --verbose
    ```
 
 3. **Or generate in steps:**
    ```bash
    # Step 1: Generate synthetic data
-   tiled-dummy-gen generate config.json
+   large-image-synth generate config.json
    
    # Step 2: Generate embeddings
-   tiled-dummy-gen embed config.json
+   large-image-synth embed config.json
    ```
 
 ## Output Formats

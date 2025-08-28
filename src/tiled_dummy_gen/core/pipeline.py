@@ -267,15 +267,35 @@ class SyntheticDataPipeline:
             return
 
         if output_format == "hdf5":
-            exporter = HDF5Exporter(self.output_dir, self.dataset_config, self.split_config, self.num_tiles_base)
+            exporter = HDF5Exporter(
+                self.output_dir,
+                self.dataset_config,
+                self.split_config,
+                self.num_tiles_base,
+            )
             exporter.export(data_to_export)
         elif output_format == "webdataset":
-            exporter = WebDatasetExporter(self.output_dir, self.dataset_config, self.split_config, self.num_tiles_base)
+            exporter = WebDatasetExporter(
+                self.output_dir,
+                self.dataset_config,
+                self.split_config,
+                self.num_tiles_base,
+            )
             exporter.export(data_to_export)
         elif output_format == "both":
-            hdf5_exporter = HDF5Exporter(self.output_dir, self.dataset_config, self.split_config, self.num_tiles_base)
+            hdf5_exporter = HDF5Exporter(
+                self.output_dir,
+                self.dataset_config,
+                self.split_config,
+                self.num_tiles_base,
+            )
             hdf5_exporter.export(data_to_export)
-            files_exporter = FileStructureExporter(self.output_dir, self.dataset_config, self.split_config, self.num_tiles_base)
+            files_exporter = FileStructureExporter(
+                self.output_dir,
+                self.dataset_config,
+                self.split_config,
+                self.num_tiles_base,
+            )
             files_exporter.export(data_to_export)
         else:
             logger.error(f"Unsupported output format: {output_format}")
@@ -297,9 +317,7 @@ class SyntheticDataPipeline:
         textual_to_id_path = os.path.join(
             self.output_dir, "zero_shot_textual_to_id.json"
         )
-        sample_to_id_path = os.path.join(
-            self.output_dir, "zero_shot_sample_to_id.json"
-        )
+        sample_to_id_path = os.path.join(self.output_dir, "zero_shot_sample_to_id.json")
 
         with open(textual_to_id_path, "w") as f:
             json.dump(textual_to_id, f, indent=4)
